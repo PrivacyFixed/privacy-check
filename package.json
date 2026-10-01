@@ -1,0 +1,26 @@
+{
+  "name": "privacyfixed-github-action",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub Action: fail a pull request when a deploy starts tracking before consent or adds a new third party.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --format=cjs --legal-comments=none --outfile=dist/index.cjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check-dist": "npm run build && git diff --exit-code -- dist"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.5.0",
+    "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "@privacyfixed/sdk": "0.2.0"
+  }
+}

@@ -1,0 +1,66 @@
+name: PrivacyFixed privacy check
+description: Fail a pull request when a deploy starts tracking before consent, keeps tracking after reject, or adds a new third party.
+author: PrivacyFixed
+branding:
+  icon: shield
+  color: green
+
+inputs:
+  api-key:
+    description: Your PrivacyFixed API key (Business or Agency plan). Pass it from a repository secret, never inline.
+    required: true
+  url:
+    description: The deploy to check, usually a preview URL.
+    required: true
+  baseline-url:
+    description: The live site to compare with. When set, checks fail only on what the deploy added.
+    required: false
+  baseline-history-days:
+    description: >-
+      Days of your saved scans of the baseline site (daily monitoring fills them) to learn what it
+      normally loads, so a company it loads only on some visits isn't reported as new. 0 turns it off.
+    required: false
+    default: "14"
+  fail-on:
+    description: >-
+      Which checks fail the run, comma-separated: trackers-before-consent, trackers-after-reject,
+      new-third-parties, missing-security-headers, or none.
+    required: false
+    default: trackers-before-consent,trackers-after-reject,new-third-parties
+  min-score:
+    description: Also fail when the privacy score (0 to 10) is below this number.
+    required: false
+  on-unmeasured:
+    description: What to do when the page can't be measured (a bot check, an error page, a scanner outage). "fail" or "warn".
+    required: false
+    default: fail
+  max-wait-seconds:
+    description: How long to wait for the scans, including waiting for another scan on your account to finish (60 to 3600).
+    required: false
+    default: "600"
+  api-url:
+    description: PrivacyFixed API address. Only https://api.privacyfixed.com is accepted.
+    required: false
+    default: https://api.privacyfixed.com
+
+outputs:
+  status:
+    description: passed, failed, unmeasured, skipped or error.
+  score:
+    description: The deploy's privacy score, 0 to 10.
+  before-consent:
+    description: Companies that tracked before consent, comma-separated.
+  after-reject:
+    description: Companies that kept tracking after reject, comma-separated.
+  new-third-parties:
+    description: Third parties on the deploy that the baseline doesn't have, comma-separated.
+  missing-security-headers:
+    description: Recommended security headers missing on the deploy, comma-separated.
+  baseline-samples:
+    description: How many samples of the baseline site the comparison used (saved plus fresh scans).
+  varying:
+    description: Companies or headers seen in only one of two scans, so not counted, comma-separated.
+
+runs:
+  using: node24
+  main: dist/index.cjs
